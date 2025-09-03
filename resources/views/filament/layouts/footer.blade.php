@@ -3,7 +3,7 @@
     <a class="font-semibold" href="https://hypefox.net" target="_blank">Hypefox Ltd</a>,
     <a class="font-semibold" href="https://pelican.dev/docs/#core-team" target="_blank">Pelican</a>
     @if(config('app.debug'))
-        <div class="flex space-x-1 text-xs ml-4">
+        <div class="flex space-x-1 text-xs">
             <x-filament::icon
                 :icon="'tabler-clock'"
                 @class(['w-4 h-4 text-gray-500 dark:text-gray-400'])
