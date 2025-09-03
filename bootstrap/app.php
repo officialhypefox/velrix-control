@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->redirectGuestsTo(fn () => route('filament.app.auth.login'));
 
-        $middleware->web(\App\Http\Middleware\LanguageMiddleware::class);
+        $middleware->web([
+                \App\Http\Middleware\LanguageMiddleware::class,
+                \App\Http\Middleware\InjectAdEngine::class,
+        ]);
 
         $middleware->api([
             \App\Http\Middleware\EnsureStatefulRequests::class,
