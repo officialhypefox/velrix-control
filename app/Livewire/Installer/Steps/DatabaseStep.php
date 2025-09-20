@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Installer\Steps;
 
+use Filament\Schemas\Components\Wizard\Step;
 use App\Livewire\Installer\PanelInstaller;
 use Exception;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Components\Wizard\Step;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Notifications\Notification;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Support\Facades\DB;
@@ -25,13 +25,12 @@ class DatabaseStep
     public static function make(PanelInstaller $installer): Step
     {
         return Step::make('database')
-            ->label('Database')
+            ->label(trans('installer.database.title'))
             ->columns()
             ->schema([
                 ToggleButtons::make('env_database.DB_CONNECTION')
-                    ->label('Database Driver')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The driver used for the panel database. We recommend "SQLite".')
+                    ->label(trans('installer.database.driver'))
+                    ->hintIcon('tabler-question-mark', trans('installer.database.driver_help'))
                     ->required()
                     ->inline()
                     ->options(self::DATABASE_DRIVERS)
@@ -61,40 +60,35 @@ class DatabaseStep
                         }
                     }),
                 TextInput::make('env_database.DB_DATABASE')
-                    ->label(fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite' ? 'Database Path' : 'Database Name')
+                    ->label(fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite' ? trans('installer.database.fields.path') : trans('installer.database.fields.name'))
                     ->placeholder(fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite' ? 'database.sqlite' : 'panel')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip(fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite' ? 'The path of your .sqlite file relative to the database folder.' : 'The name of the panel database.')
+                    ->hintIcon('tabler-question-mark', fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite' ? trans('installer.database.fields.path_help') : trans('installer.database.fields.name_help'))
                     ->required()
                     ->default('database.sqlite'),
                 TextInput::make('env_database.DB_HOST')
-                    ->label('Database Host')
+                    ->label(trans('installer.database.fields.host'))
                     ->placeholder('127.0.0.1')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The host of your database. Make sure it is reachable.')
+                    ->hintIcon('tabler-question-mark', trans('installer.database.fields.host_help'))
                     ->required(fn (Get $get) => $get('env_database.DB_CONNECTION') !== 'sqlite')
                     ->hidden(fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite'),
                 TextInput::make('env_database.DB_PORT')
-                    ->label('Database Port')
+                    ->label(trans('installer.database.fields.port'))
                     ->placeholder('3306')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The port of your database.')
+                    ->hintIcon('tabler-question-mark', trans('installer.database.fields.port_help'))
                     ->numeric()
                     ->minValue(1)
                     ->maxValue(65535)
                     ->required(fn (Get $get) => $get('env_database.DB_CONNECTION') !== 'sqlite')
                     ->hidden(fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite'),
                 TextInput::make('env_database.DB_USERNAME')
-                    ->label('Database Username')
+                    ->label(trans('installer.database.fields.username'))
                     ->placeholder('pelican')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The name of your database user.')
+                    ->hintIcon('tabler-question-mark', trans('installer.database.fields.username_help'))
                     ->required(fn (Get $get) => $get('env_database.DB_CONNECTION') !== 'sqlite')
                     ->hidden(fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite'),
                 TextInput::make('env_database.DB_PASSWORD')
-                    ->label('Database Password')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The password of your database user. Can be empty.')
+                    ->label(trans('installer.database.fields.password'))
+                    ->hintIcon('tabler-question-mark', trans('installer.database.fields.password_help'))
                     ->password()
                     ->revealable()
                     ->hidden(fn (Get $get) => $get('env_database.DB_CONNECTION') === 'sqlite'),
@@ -103,7 +97,7 @@ class DatabaseStep
                 $driver = $get('env_database.DB_CONNECTION');
 
                 if (!self::testConnection($driver, $get('env_database.DB_HOST'), $get('env_database.DB_PORT'), $get('env_database.DB_DATABASE'), $get('env_database.DB_USERNAME'), $get('env_database.DB_PASSWORD'))) {
-                    throw new Halt('Database connection failed');
+                    throw new Halt(trans('installer.database.exceptions.connection'));
                 }
 
                 $installer->writeToEnv('env_database');
@@ -133,7 +127,7 @@ class DatabaseStep
             DB::disconnect('_panel_install_test');
 
             Notification::make()
-                ->title('Database connection failed')
+                ->title(trans('installer.database.exceptions.connection'))
                 ->body($exception->getMessage())
                 ->danger()
                 ->send();

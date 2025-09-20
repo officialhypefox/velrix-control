@@ -8,6 +8,7 @@ use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 
 class DaemonServerRepository extends DaemonRepository
 {
@@ -31,8 +32,8 @@ class DaemonServerRepository extends DaemonRepository
 
             if ($requestBadGateway && $requestFromCloudflare && !$requestCachedFromCloudflare) {
                 Notification::make()
-                    ->title('Cloudflare Issue')
-                    ->body('Your Node is not accessible by Cloudflare')
+                    ->title(trans('admin/node.cloudflare_issue.title'))
+                    ->body(trans('admin/node.cloudflare_issue.body'))
                     ->danger()
                     ->send();
             }
@@ -148,5 +149,17 @@ class DaemonServerRepository extends DaemonRepository
             ->get("/api/servers/{$this->server->uuid}/install-logs")
             ->throw()
             ->json('data');
+    }
+
+    /**
+     * Sends a power action to the server instance.
+     *
+     * @throws ConnectionException
+     */
+    public function power(string $action): Response
+    {
+        return $this->getHttpClient()->post("/api/servers/{$this->server->uuid}/power",
+            ['action' => $action],
+        );
     }
 }

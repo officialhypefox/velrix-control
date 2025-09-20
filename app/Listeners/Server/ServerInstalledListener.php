@@ -2,10 +2,10 @@
 
 namespace App\Listeners\Server;
 
+use Filament\Actions\Action;
 use App\Events\Server\Installed;
 use App\Filament\Server\Pages\Console;
 use App\Notifications\ServerInstalled;
-use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Notification;
 
 class ServerInstalledListener
@@ -16,12 +16,12 @@ class ServerInstalledListener
 
         Notification::make()
             ->status($event->successful ? 'success' : 'danger')
-            ->title('Server ' . ($event->initialInstall ? 'Installation' : 'Reinstallation') . ' ' . ($event->successful ? 'completed' : 'failed'))
-            ->body('Server Name: ' . $event->server->name)
+            ->title(trans('notifications.' . ($event->initialInstall ? 'installation' : 'reinstallation') . '_' . ($event->successful ? 'completed' : 'failed')))
+            ->body(trans('server/setting.server_info.server_name', ['name' => $event->server->name]))
             ->actions([
                 Action::make('view')
                     ->button()
-                    ->label('Open Server')
+                    ->label(trans('notifications.open_server'))
                     ->markAsRead()
                     ->url(fn () => Console::getUrl(panel: 'server', tenant: $event->server)),
             ])

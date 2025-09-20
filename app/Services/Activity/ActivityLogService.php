@@ -2,6 +2,7 @@
 
 namespace App\Services\Activity;
 
+use Closure;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Throwable;
@@ -24,7 +25,6 @@ class ActivityLogService
 
     public function __construct(
         protected AuthFactory $manager,
-        protected ActivityLogBatchService $batch,
         protected ActivityLogTargetableService $targetable,
         protected ConnectionInterface $connection
     ) {}
@@ -168,9 +168,9 @@ class ActivityLogService
      * and will only save the activity log entry if everything else successfully
      * settles.
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function transaction(\Closure $callback): mixed
+    public function transaction(Closure $callback): mixed
     {
         return $this->connection->transaction(function () use ($callback) {
             $response = $callback($this);
@@ -201,7 +201,6 @@ class ActivityLogService
 
         $this->activity = new ActivityLog([
             'ip' => Request::ip(),
-            'batch_uuid' => $this->batch->uuid(),
             'properties' => Collection::make([]),
             'api_key_id' => $this->targetable->apiKeyId(),
         ]);
@@ -226,7 +225,7 @@ class ActivityLogService
     /**
      * Saves the activity log instance and attaches all the subject models.
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     protected function save(): ActivityLog
     {

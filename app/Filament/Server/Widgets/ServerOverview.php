@@ -12,7 +12,7 @@ use Livewire\Attributes\On;
 
 class ServerOverview extends StatsOverviewWidget
 {
-    protected static ?string $pollingInterval = '1s';
+    protected ?string $pollingInterval = '1s';
 
     public ?Server $server = null;
 
@@ -97,7 +97,7 @@ class ServerOverview extends StatsOverviewWidget
         $this->js("window.navigator.clipboard.writeText('{$value}');");
 
         Notification::make()
-            ->title('Copied to clipboard')
+            ->title(trans('server/dashboard.copied'))
             ->body($value)
             ->success()
             ->send();

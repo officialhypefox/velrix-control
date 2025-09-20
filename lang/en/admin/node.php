@@ -4,6 +4,7 @@ return [
     'nav_title' => 'Nodes',
     'model_label' => 'Node',
     'model_label_plural' => 'Nodes',
+    'create' => 'Create Node',
     'tabs' => [
         'overview' => 'Overview',
         'basic_settings' => 'Basic Settings',
@@ -29,7 +30,7 @@ return [
     'architecture' => 'Architecture',
     'kernel' => 'Kernel',
     'unknown' => 'Unknown',
-    'latest' => 'Latest',
+    'latest' => '(Latest: :version)',
     'node_uuid' => 'Node UUID',
     'node_id' => 'Node ID',
 
@@ -88,6 +89,7 @@ return [
 
     'auto_deploy' => 'Auto Deploy Command',
     'auto_question' => 'Choose between Standalone and Docker install.',
+    'auto_label' => 'Type',
     'standalone' => 'Standalone',
     'docker' => 'Docker',
     'auto_command' => 'To auto-configure your node run the following command:',
@@ -96,6 +98,7 @@ return [
     'reset_help' => 'Resetting the daemon token will void any request coming from the old token. This token is used for all sensitive operations on the daemon including server creation and deletion. We suggest changing this token regularly for security.',
 
     'no_nodes' => 'No Nodes',
+    'none' => 'None',
     'cpu_chart' => 'CPU - :cpu% of :max%',
     'memory_chart' => 'Memory - :used of :total',
     'disk_chart' => 'Storage - :used of :total',
@@ -112,4 +115,9 @@ return [
     'error_connecting' => 'Error connecting to :node',
     'error_connecting_description' => 'The configuration could not be automatically updated on Wings, you will need to manually update the configuration file.',
     'allocation' => 'Allocation',
+
+    'cloudflare_issue' => [
+        'title' => 'Cloudflare Issue',
+        'body' => 'Your Node is not accessible by Cloudflare',
+    ],
 ];

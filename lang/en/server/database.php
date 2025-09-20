@@ -2,6 +2,7 @@
 
 return [
     'title' => 'Databases',
+    'empty' => 'No Databases',
     'create_database' => 'Create Database',
     'limit' => 'Database limit reached',
     'viewing' => 'Viewing: :database',
@@ -18,4 +19,8 @@ return [
     'database_host' => 'Database Host',
     'database_host_select' => 'Select Database Host',
     'jdbc' => 'JDBC Connection String',
+    'create_notification' => 'Created :database',
+    'create_notification_fail' => 'Failed to create :database',
+    'delete_notification' => 'Deleted :database',
+    'delete_notification_fail' => 'Failed to delete :database',
 ];

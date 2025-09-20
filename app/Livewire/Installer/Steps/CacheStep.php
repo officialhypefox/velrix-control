@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Installer\Steps;
 
+use Filament\Schemas\Components\Wizard\Step;
 use App\Livewire\Installer\PanelInstaller;
 use Exception;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Components\Wizard\Step;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Notifications\Notification;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Foundation\Application;
@@ -24,13 +24,12 @@ class CacheStep
     public static function make(PanelInstaller $installer): Step
     {
         return Step::make('cache')
-            ->label('Cache')
+            ->label(trans('installer.cache.title'))
             ->columns()
             ->schema([
                 ToggleButtons::make('env_cache.CACHE_STORE')
-                    ->label('Cache Driver')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The driver used for caching. We recommend "Filesystem".')
+                    ->label(trans('installer.cache.driver'))
+                    ->hintIcon('tabler-question-mark', trans('installer.cache.driver_help'))
                     ->required()
                     ->inline()
                     ->options(self::CACHE_DRIVERS)
@@ -50,31 +49,27 @@ class CacheStep
                         }
                     }),
                 TextInput::make('env_cache.REDIS_HOST')
-                    ->label('Redis Host')
+                    ->label(trans('installer.cache.fields.host'))
                     ->placeholder('127.0.0.1')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The host of your redis server. Make sure it is reachable.')
+                    ->hintIcon('tabler-question-mark', trans('installer.cache.fields.host_help'))
                     ->required(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis')
                     ->default(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis' ? config('database.redis.default.host') : null)
                     ->visible(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis'),
                 TextInput::make('env_cache.REDIS_PORT')
-                    ->label('Redis Port')
+                    ->label(trans('installer.cache.fields.port'))
                     ->placeholder('6379')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The port of your redis server.')
+                    ->hintIcon('tabler-question-mark', trans('installer.cache.fields.port_help'))
                     ->required(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis')
                     ->default(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis' ? config('database.redis.default.port') : null)
                     ->visible(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis'),
                 TextInput::make('env_cache.REDIS_USERNAME')
-                    ->label('Redis Username')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The name of your redis user. Can be empty')
+                    ->label(trans('installer.cache.fields.username'))
+                    ->hintIcon('tabler-question-mark', trans('installer.cache.fields.username_help'))
                     ->default(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis' ? config('database.redis.default.username') : null)
                     ->visible(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis'),
                 TextInput::make('env_cache.REDIS_PASSWORD')
-                    ->label('Redis Password')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The password for your redis user. Can be empty.')
+                    ->label(trans('installer.cache.fields.password'))
+                    ->hintIcon('tabler-question-mark', trans('installer.cache.fields.password_help'))
                     ->password()
                     ->revealable()
                     ->default(fn (Get $get) => $get('env_cache.CACHE_STORE') === 'redis' ? config('database.redis.default.password') : null)
@@ -110,7 +105,7 @@ class CacheStep
             $redis->connection()->command('ping');
         } catch (Exception $exception) {
             Notification::make()
-                ->title('Redis connection failed')
+                ->title(trans('installer.cache.exception'))
                 ->body($exception->getMessage())
                 ->danger()
                 ->send();

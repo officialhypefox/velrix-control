@@ -11,12 +11,12 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
@@ -102,11 +102,12 @@ class ImportEggAction extends Action
     public function multiple(bool|Closure $condition = true): static
     {
         $isMultiple = (bool) $this->evaluate($condition);
-        $this->form([
+        $this->schema([
             Tabs::make('Tabs')
                 ->contained(false)
                 ->tabs([
-                    Tab::make(trans('admin/egg.import.file'))
+                    Tab::make('file')
+                        ->label(trans('admin/egg.import.file'))
                         ->icon('tabler-file-upload')
                         ->schema([
                             FileUpload::make('files')
@@ -118,7 +119,8 @@ class ImportEggAction extends Action
                                 ->storeFiles(false)
                                 ->multiple($isMultiple),
                         ]),
-                    Tab::make(trans('admin/egg.import.url'))
+                    Tab::make('url')
+                        ->label(trans('admin/egg.import.url'))
                         ->icon('tabler-world-upload')
                         ->schema([
                             Select::make('github')
@@ -128,8 +130,7 @@ class ImportEggAction extends Action
                                 ->searchable()
                                 ->preload()
                                 ->live()
-                                ->hintIcon('tabler-refresh')
-                                ->hintIconTooltip(trans('admin/egg.import.refresh'))
+                                ->hintIcon('tabler-refresh', trans('admin/egg.import.refresh'))
                                 ->hintAction(function () {
                                     Artisan::call(UpdateEggIndexCommand::class);
                                 })
@@ -142,7 +143,7 @@ class ImportEggAction extends Action
                                     }
                                 }),
                             Repeater::make('urls')
-                                ->label('')
+                                ->hiddenLabel()
                                 ->itemLabel(fn (array $state) => str($state['url'])->afterLast('/egg-')->beforeLast('.')->headline())
                                 ->hint(trans('admin/egg.import.url_help'))
                                 ->addActionLabel(trans('admin/egg.import.add_url'))
@@ -152,7 +153,7 @@ class ImportEggAction extends Action
                                 ->deletable(fn (array $state) => count($state) > 1)
                                 ->schema([
                                     TextInput::make('url')
-                                        ->default(fn (Egg $egg) => $egg->update_url)
+                                        ->default(fn (?Egg $egg) => $egg->update_url ?? '')
                                         ->live()
                                         ->label(trans('admin/egg.import.url'))
                                         ->placeholder('https://github.com/pelican-eggs/generic/blob/main/nodejs/egg-node-js-generic.json')

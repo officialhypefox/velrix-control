@@ -2,6 +2,7 @@
 
 namespace App\Services\Nodes;
 
+use App\Exceptions\Model\DataValidationException;
 use App\Models\ApiKey;
 use App\Models\Node;
 use App\Services\Acl\Api\AdminAcl;
@@ -21,7 +22,7 @@ class NodeAutoDeployService
      * Generates a new API key for the logged-in user with only permission to read
      * nodes, and returns that as the deployment key for a node.
      *
-     * @throws \App\Exceptions\Model\DataValidationException
+     * @throws DataValidationException
      */
     public function handle(Request $request, Node $node, ?bool $docker = false): ?string
     {
@@ -49,7 +50,7 @@ class NodeAutoDeployService
 
         return sprintf(
             '%s wings configure --panel-url %s --token %s --node %d%s',
-            $docker ? 'docker compose exec -it' : 'sudo',
+            $docker ? 'docker compose exec -it $(docker ps --filter "name=wings" --format "{{.Names}}")' : 'sudo',
             config('app.url'),
             $token,
             $node->id,

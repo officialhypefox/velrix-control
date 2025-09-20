@@ -16,7 +16,7 @@ use Livewire\Attributes\On;
 
 class ServerConsole extends Widget
 {
-    protected static string $view = 'filament.components.server-console';
+    protected string $view = 'filament.components.server-console';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -133,8 +133,8 @@ class ServerConsole extends Widget
     public function websocketError(): void
     {
         AlertBanner::make('websocket_error')
-            ->title('Could not connect to websocket!')
-            ->body('Check your browser console for more details.')
+            ->title(trans('server/console.websocket_error.title'))
+            ->body(trans('server/console.websocket_error.body'))
             ->danger()
             ->send();
     }

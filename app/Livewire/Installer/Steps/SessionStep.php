@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Installer\Steps;
 
+use Filament\Schemas\Components\Wizard\Step;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
-use Filament\Forms\Components\Wizard\Step;
-use Filament\Forms\Get;
+use Filament\Schemas\Components\Utilities\Get;
 
 class SessionStep
 {
@@ -19,12 +19,11 @@ class SessionStep
     public static function make(): Step
     {
         return Step::make('session')
-            ->label('Session')
+            ->label(trans('installer.session.title'))
             ->schema([
                 ToggleButtons::make('env_session.SESSION_DRIVER')
-                    ->label('Session Driver')
-                    ->hintIcon('tabler-question-mark')
-                    ->hintIconTooltip('The driver used for storing sessions. We recommend "Filesystem" or "Database".')
+                    ->label(trans('installer.session.driver'))
+                    ->hintIcon('tabler-question-mark', trans('installer.session.driver_help'))
                     ->required()
                     ->inline()
                     ->options(self::SESSION_DRIVERS)
