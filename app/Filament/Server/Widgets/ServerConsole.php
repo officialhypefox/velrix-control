@@ -11,8 +11,8 @@ use App\Services\Nodes\NodeJWTService;
 use App\Services\Servers\GetUserPermissionsService;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Arr;
-use Livewire\Attributes\Session;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Session;
 
 class ServerConsole extends Widget
 {
@@ -121,11 +121,11 @@ class ServerConsole extends Widget
 
         foreach ($data as $key => $value) {
             $cacheKey = "servers.{$this->server->id}.$key";
-            $data = cache()->get($cacheKey, []);
+            $cachedStats = cache()->get($cacheKey, []);
 
-            $data[$timestamp] = $value;
+            $cachedStats[$timestamp] = $value;
 
-            cache()->put($cacheKey, $data, now()->addMinute());
+            cache()->put($cacheKey, array_slice($cachedStats, -120), now()->addMinute());
         }
     }
 
