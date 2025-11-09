@@ -9,23 +9,22 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: SSH Deploy
-              uses: appleboy/ssh-action@master
+              uses: appleboy/ssh-action@v1
               with:
                   host: ${{ secrets.SSH_HOST }}
                   username: ${{ secrets.SSH_USERNAME }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.SSH_PORT }}
-                  known_hosts: ${{ secrets.KNOWN_HOSTS }}
+                  fingerprint: ${{ secrets.SSH_FINGERPRINT }}
                   script: |
                       set -e
                       cd /var/www/pelican
-                      php artisan down
                       git fetch origin
                       git reset --hard origin/main
-                      export PATH="$HOME/.bun/bin:$PATH"
                       COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction
                       bun update --latest
                       bun x vite build
+                      php artisan down
                       chmod -R 755 storage/* bootstrap/cache
                       php artisan storage:link
                       php artisan optimize:clear
