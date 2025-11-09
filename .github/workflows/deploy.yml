@@ -1,0 +1,36 @@
+name: Deploy Pelican
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: SSH Deploy
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USERNAME }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: ${{ secrets.SSH_PORT }}
+                  known_hosts: ${{ secrets.KNOWN_HOSTS }}
+                  script: |
+                      set -e
+                      cd /var/www/pelican
+                      php artisan down
+                      git fetch origin
+                      git reset --hard origin/main
+                      export PATH="$HOME/.bun/bin:$PATH"
+                      COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction
+                      bun update --latest
+                      bun x vite build
+                      chmod -R 755 storage/* bootstrap/cache
+                      php artisan storage:link
+                      php artisan optimize:clear
+                      php artisan optimize
+                      php artisan migrate --seed --force
+                      chown -R www-data:www-data /var/www/pelican
+                      php artisan queue:restart
+                      php artisan up
