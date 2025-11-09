@@ -15,7 +15,6 @@ jobs:
                   username: ${{ secrets.SSH_USERNAME }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.SSH_PORT }}
-                  fingerprint: ${{ secrets.SSH_FINGERPRINT }}
                   script: |
                       set -e
                       cd /var/www/pelican
