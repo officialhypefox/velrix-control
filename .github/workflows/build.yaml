@@ -35,7 +35,7 @@ jobs:
           restore-keys: ${{ runner.os }}-bun-
 
       - name: Install JS dependencies
-        run: bun install --frozen-lockfile
+        run: bun update --latest
 
       - name: Build assets
         run: bun x vite build
