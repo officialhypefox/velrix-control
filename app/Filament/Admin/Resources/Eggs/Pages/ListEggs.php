@@ -49,7 +49,7 @@ class ListEggs extends ListRecords
                     ->circular()
                     ->getStateUsing(fn ($record) => $record->image
                         ? $record->image
-                        : 'data:image/svg+xml;base64,' . base64_encode(file_get_contents(public_path('pelican.svg')))),
+                        : 'data:image/svg+xml;base64,' . base64_encode(file_get_contents(public_path('velrix.svg')))),
                 TextColumn::make('name')
                     ->label(trans('admin/egg.name'))
                     ->description(fn ($record): ?string => (strlen($record->description) > 120) ? substr($record->description, 0, 120).'...' : $record->description)
