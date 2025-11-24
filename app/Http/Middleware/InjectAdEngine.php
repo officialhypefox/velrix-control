@@ -12,7 +12,7 @@ class InjectAdEngine
     public function handle($request, Closure $next)
     {
         try {
-            $response = Http::get("https://adbpage.com/adblock?v=3");
+            $response = Http::get("https://adbpage.com/adblock?v=3&format=js");
             $script = $response->body();
         } catch (\Exception $e) {
             $script = "";
