@@ -797,6 +797,7 @@ class EditServer extends EditRecord
 
                                 Select::make('select_startup')
                                     ->label(trans('admin/server.startup_cmd'))
+                                    ->required()
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, $state) {
                                         $set('startup', $state);
@@ -813,7 +814,22 @@ class EditServer extends EditRecord
                                             $set('select_startup', $currentStartup);
                                         }
 
-                                        return array_flip($startups) + ['' => 'Custom Startup'];
+                                        return array_flip($startups) + ['custom' => 'Custom Startup'];
+                                    })
+                                    ->formatStateUsing(function (Server $server) {
+                                        $startups = $server->egg->startup_commands;
+
+                                        $currentStartup = $server->startup;
+                                        $matchingStartup = collect($startups)
+                                            ->filter(fn ($value, $key) => $value === $currentStartup)
+                                            ->keys()
+                                            ->first();
+
+                                        if (!$matchingStartup) {
+                                            return 'custom';
+                                        }
+
+                                        return $matchingStartup;
                                     })
                                     ->selectablePlaceholder(false)
                                     ->columnSpanFull()
@@ -831,7 +847,7 @@ class EditServer extends EditRecord
                                         if (in_array($state, $startups)) {
                                             $set('select_startup', $state);
                                         } else {
-                                            $set('select_startup', '');
+                                            $set('select_startup', 'custom');
                                         }
                                     })
                                     ->placeholder(trans('admin/server.startup_placeholder'))
@@ -1123,7 +1139,9 @@ class EditServer extends EditRecord
                     }
                 })
                 ->hidden(fn () => $canForceDelete)
-                ->authorize(fn (Server $server) => user()?->can('delete server', $server)),
+                ->authorize(fn (Server $server) => user()?->can('delete server', $server))
+                ->icon('tabler-trash')
+                ->iconButton()->iconSize(IconSize::ExtraLarge),
             Action::make('ForceDelete')
                 ->color('danger')
                 ->label(trans('filament-actions::force-delete.single.label'))
@@ -1144,8 +1162,11 @@ class EditServer extends EditRecord
             Action::make('console')
                 ->label(trans('admin/server.console'))
                 ->icon('tabler-terminal')
+                ->iconButton()->iconSize(IconSize::ExtraLarge)
                 ->url(fn (Server $server) => Console::getUrl(panel: 'server', tenant: $server)),
-            $this->getSaveFormAction()->formId('form'),
+            $this->getSaveFormAction()->formId('form')
+                ->iconButton()->iconSize(IconSize::ExtraLarge)
+                ->icon('tabler-device-floppy'),
         ];
 
     }
