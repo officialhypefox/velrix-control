@@ -7,6 +7,7 @@ use App\Exceptions\Service\InvalidFileUploadException;
 use App\Models\Plugin;
 use Composer\Autoload\ClassLoader;
 use Exception;
+use Filament\Facades\Filament;
 use Filament\Panel;
 use Illuminate\Console\Application as ConsoleApplication;
 use Illuminate\Console\Command;
@@ -15,6 +16,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -263,7 +265,7 @@ class PluginService
                 throw ($exception);
             }
 
-            report($exception);
+            Log::warning($exception->getMessage(), ['exception' => $exception]);
         }
 
         return false;
@@ -287,6 +289,10 @@ class PluginService
             $this->runPluginMigrations($plugin);
 
             $this->runPluginSeeder($plugin);
+
+            foreach (Filament::getPanels() as $panel) {
+                $panel->clearCachedComponents();
+            }
         } catch (Exception $exception) {
             $this->handlePluginException($plugin, $exception);
         }
