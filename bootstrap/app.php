@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web([
                 \App\Http\Middleware\LanguageMiddleware::class,
-                \App\Http\Middleware\InjectAdEngine::class,
+                #\App\Http\Middleware\InjectAdEngine::class,
         ]);
 
         $middleware->api([
