@@ -314,7 +314,7 @@ class EditNode extends EditRecord
                             'default' => 1,
                             'sm' => 1,
                             'md' => 2,
-                            'lg' => 2,
+                            'lg' => 3,
                         ]),
                     TextInput::make('upload_size')
                         ->columnSpan([
@@ -329,12 +329,24 @@ class EditNode extends EditRecord
                         ->required()
                         ->minValue(1)
                         ->suffix(config('panel.use_binary_prefix') ? 'MiB' : 'MB'),
+                    TextInput::make('daemon_base')
+                        ->label(trans('admin/node.daemon_base'))
+                        ->placeholder('/var/lib/pelican/volumes')
+                        ->hintIcon(TablerIcon::QuestionMark, trans('admin/node.daemon_base_help'))
+                        ->columnSpan([
+                            'default' => 1,
+                            'sm' => 1,
+                            'md' => 2,
+                            'lg' => 2,
+                        ])
+                        ->required()
+                        ->rule('regex:/^([\/][\d\w.\-\/]+)$/'),
                     TextInput::make('daemon_sftp')
                         ->columnSpan([
                             'default' => 1,
                             'sm' => 1,
-                            'md' => 1,
-                            'lg' => 3,
+                            'md' => 2,
+                            'lg' => 1,
                         ])
                         ->label(trans('admin/node.sftp_port'))
                         ->minValue(1)
@@ -346,8 +358,8 @@ class EditNode extends EditRecord
                         ->columnSpan([
                             'default' => 1,
                             'sm' => 1,
-                            'md' => 1,
-                            'lg' => 3,
+                            'md' => 2,
+                            'lg' => 2,
                         ])
                         ->label(trans('admin/node.sftp_alias'))
                         ->helperText(trans('admin/node.sftp_alias_help')),
@@ -356,7 +368,7 @@ class EditNode extends EditRecord
                             'default' => 1,
                             'sm' => 1,
                             'md' => 1,
-                            'lg' => 3,
+                            'lg' => 2,
                         ])
                         ->label(trans('admin/node.use_for_deploy'))
                         ->inline()
@@ -374,7 +386,7 @@ class EditNode extends EditRecord
                             'default' => 1,
                             'sm' => 1,
                             'md' => 1,
-                            'lg' => 3,
+                            'lg' => 2,
                         ])
                         ->label(trans('admin/node.maintenance_mode'))
                         ->inline()
@@ -572,7 +584,7 @@ class EditNode extends EditRecord
                         ->columnSpanFull()
                         ->schema([
                             Actions::make([
-                                Action::make('autoDeploy')
+                                Action::make('exclude_autoDeploy')
                                     ->label(trans('admin/node.auto_deploy'))
                                     ->color('primary')
                                     ->modalHeading(trans('admin/node.auto_deploy'))
@@ -610,7 +622,7 @@ class EditNode extends EditRecord
                                     }),
                             ])->fullWidth(),
                             Actions::make([
-                                Action::make('resetKey')
+                                Action::make('exclude_resetKey')
                                     ->label(trans('admin/node.reset_token'))
                                     ->color('danger')
                                     ->requiresConfirmation()
