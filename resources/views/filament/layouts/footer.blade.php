@@ -3,7 +3,7 @@
 
     <span>&copy; {{ date('Y') }}</span>
     <span>·</span>
-    <a class="font-semibold" href="https://hypefox.net" target="_blank">Hypefox Ltd</a>
+    <a class="font-semibold" href="https://hypefox.net" target="_blank">Hypefox AB</a>
     <span>&amp;</span>
     <a class="font-semibold" href="https://pelican.dev/docs/#core-team" target="_blank">Pelican</a>
 
