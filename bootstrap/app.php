@@ -11,13 +11,14 @@ use App\Http\Middleware\Api\IsValidJson;
 use App\Http\Middleware\EnsureStatefulRequests;
 use App\Http\Middleware\LanguageMiddleware;
 use App\Http\Middleware\MaintenanceMiddleware;
+use App\Http\Middleware\PreventRequestForgery;
 use App\Http\Middleware\RedirectIfAuthenticated;
-use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Middleware\SetSecurityHeaders;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery as IlluminatePreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -28,7 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->redirectGuestsTo(fn () => route('filament.app.auth.login'));
 
-        $middleware->web(LanguageMiddleware::class);
+        $middleware->web([
+            LanguageMiddleware::class,
+            SetSecurityHeaders::class,
+        ]);
 
         $middleware->api([
             EnsureStatefulRequests::class,
@@ -53,7 +57,7 @@ return Application::configure(basePath: dirname(__DIR__))
             DaemonAuthenticate::class,
         ]);
 
-        $middleware->replaceInGroup('web', ValidateCsrfToken::class, VerifyCsrfToken::class);
+        $middleware->replaceInGroup('web', IlluminatePreventRequestForgery::class, PreventRequestForgery::class);
 
         $middleware->alias([
             'bindings' => SubstituteBindings::class,
