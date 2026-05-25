@@ -1,8 +1,8 @@
-name: Deploy
+name: Deploy to Melonslab
 
 on:
   workflow_run:
-    workflows: ["Tests"]
+    workflows: ["Run tests"]
     branches: [main]
     types: 
       - completed
