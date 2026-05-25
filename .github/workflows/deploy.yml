@@ -1,5 +1,5 @@
 deploy:
-  needs: tests
+  needs: Tests
 
   runs-on: ubuntu-latest
 
