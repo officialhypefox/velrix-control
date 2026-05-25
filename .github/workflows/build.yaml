@@ -7,39 +7,28 @@ on:
 
 jobs:
   build:
-    name: Build
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        node-version: [22, 24]
+
     steps:
-      - name: Code Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.5"
-          extensions: bcmath, curl, gd, mbstring, mysql, openssl, pdo, tokenizer, xml, zip
+          extensions: bcmath, curl, gd, mbstring, openssl, pdo, xml, zip
           tools: composer:v2
           coverage: none
 
-      - name: Install PHP dependencies
-        run: composer install --no-interaction --no-suggest --no-progress --no-autoloader --no-scripts --no-dev
+      - name: Install PHP deps
+        run: composer install --no-interaction --no-dev --optimize-autoloader
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Cache Bun deps
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: ${{ runner.os }}-bun-
-
-      - name: Install JS dependencies
-        run: bun update --latest
+      - name: Install JS deps
+        run: bun install
 
       - name: Build assets
         run: bun x vite build
