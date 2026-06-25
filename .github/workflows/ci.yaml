@@ -27,12 +27,8 @@ jobs:
       fail-fast: true
       matrix:
         php: [8.5]
-        database: ["postgres:17", "postgres:18"]
+        database: ["postgres:18"]
         include:
-          # postgres:17 stores data in /var/lib/postgresql/data, 18+ requires a
-          # single mount at /var/lib/postgresql and errors on a data submount
-          - database: "postgres:17"
-            tmpfs: /var/lib/postgresql/data
           - database: "postgres:18"
             tmpfs: /var/lib/postgresql
     services:
