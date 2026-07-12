@@ -82,7 +82,9 @@ return new class extends Migration
             $table->string('disk')->nullable()->after('backup_host_id');
         });
 
-        DB::statement('UPDATE backups SET disk = backup_hosts.schema FROM backup_hosts WHERE backups.backup_host_id = backup_hosts.id');
+        foreach (DB::table('backup_hosts')->get() as $host) {
+            DB::table('backups')->where('backup_host_id', $host->id)->update(['disk' => $host->schema]);
+        }
 
         Schema::table('backups', function (Blueprint $table) {
             $table->string('disk')->nullable(false)->change();
