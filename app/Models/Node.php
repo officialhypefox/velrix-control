@@ -61,6 +61,8 @@ use Symfony\Component\Yaml\Yaml;
  * @property-read int|null $roles_count
  * @property-read Collection<int, Server> $servers
  * @property-read int|null $servers_count
+ * @property-read Collection<int, BackupHost> $backupHosts
+ * @property-read int|null $backup_hosts_count
  *
  * @method static \Database\Factories\NodeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Node newModelQuery()
@@ -222,8 +224,8 @@ class Node extends Model implements Validatable
      *
      * @return array{
      *     debug: bool,
-     *     uuid: string,
-     *     token_id: string,
+     *     uuid: string|null,
+     *     token_id: string|null,
      *     token: string,
      *     api: array{
      *         host: string,
@@ -232,7 +234,7 @@ class Node extends Model implements Validatable
      *         upload_limit: int
      *     },
      *     system: array{data: string, sftp: array{bind_port: int}},
-     *     allowed_mounts: string[],
+     *     allowed_mounts: array<mixed>,
      *     remote: string,
      * }
      */
@@ -260,7 +262,7 @@ class Node extends Model implements Validatable
                 ],
             ],
             'allowed_mounts' => $this->mounts->pluck('source')->toArray(),
-            'remote' => config('app.url'),
+            'remote' => (string) config('app.url'),
         ];
     }
 
@@ -274,10 +276,12 @@ class Node extends Model implements Validatable
 
     /**
      * Returns the configuration in JSON format.
+     *
+     * @throws \JsonException
      */
     public function getJsonConfiguration(bool $pretty = false): string
     {
-        return json_encode($this->getConfiguration(), $pretty ? JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT : JSON_UNESCAPED_SLASHES);
+        return json_encode($this->getConfiguration(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | ($pretty ? JSON_PRETTY_PRINT : 0));
     }
 
     public function isUnderMaintenance(): bool
@@ -308,12 +312,15 @@ class Node extends Model implements Validatable
         return $this->hasMany(Allocation::class);
     }
 
-    /**
-     * @return BelongsToMany<DatabaseHost, $this>
-     */
+    /** @return BelongsToMany<DatabaseHost, $this> */
     public function databaseHosts(): BelongsToMany
     {
         return $this->belongsToMany(DatabaseHost::class);
+    }
+
+    public function backupHosts(): BelongsToMany
+    {
+        return $this->belongsToMany(BackupHost::class);
     }
 
     public function roles(): HasManyThrough
