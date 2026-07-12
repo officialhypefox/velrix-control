@@ -24,19 +24,18 @@ return new class extends Migration
         Schema::create('backup_host_node', function (Blueprint $table) {
             $table->unsignedInteger('node_id');
             $table->foreign('node_id')->references('id')->on('nodes')->cascadeOnDelete();
-
             $table->unsignedInteger('backup_host_id');
             $table->foreign('backup_host_id')->references('id')->on('backup_hosts')->cascadeOnDelete();
-
             $table->timestamps();
-
             $table->unique(['node_id']);
         });
 
+        // Add the column as nullable first so the ALTER succeeds on installs
+        // that already have rows in `backups`. It is tightened to NOT NULL
+        // further down, after every existing row has been backfilled.
         Schema::table('backups', function (Blueprint $table) {
-            $table->unsignedInteger('backup_host_id')->after('disk');
+            $table->unsignedInteger('backup_host_id')->nullable()->after('disk');
             $table->foreign('backup_host_id')->references('id')->on('backup_hosts');
-
             $table->dropColumn('disk');
         });
 
@@ -64,6 +63,12 @@ return new class extends Migration
         ]);
 
         DB::table('backups')->update(['backup_host_id' => $backupHost->id]);
+
+        // Every row now has a value; enforce the constraint the original
+        // migration intended.
+        Schema::table('backups', function (Blueprint $table) {
+            $table->unsignedInteger('backup_host_id')->nullable(false)->change();
+        });
     }
 
     /**
@@ -71,15 +76,22 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Mirror of the fix in up(): re-add `disk` as nullable, backfill it
+        // from each backup host's schema, then enforce NOT NULL.
         Schema::table('backups', function (Blueprint $table) {
-            $table->string('disk')->after('backup_host_id');
+            $table->string('disk')->nullable()->after('backup_host_id');
+        });
 
+        DB::statement('UPDATE backups SET disk = backup_hosts.schema FROM backup_hosts WHERE backups.backup_host_id = backup_hosts.id');
+
+        Schema::table('backups', function (Blueprint $table) {
+            $table->string('disk')->nullable(false)->change();
             $table->dropForeign(['backup_host_id']);
             $table->dropColumn('backup_host_id');
         });
 
-        Schema::dropIfExists('backup_hosts');
-
+        // backup_host_node references backup_hosts, so it must be dropped first.
         Schema::dropIfExists('backup_host_node');
+        Schema::dropIfExists('backup_hosts');
     }
 };
