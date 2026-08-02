@@ -14,6 +14,13 @@ return [
         'passkeys' => 'Passkeys',
     ],
     'username' => 'Username',
+    // Shown when a user's account is owned by Velrix (is_managed_externally). The
+    // fields are already locked by upstream; without this, they are locked with no
+    // explanation and the only thing a user can do is open a support ticket.
+    'managed_externally_title' => 'Your account details are managed by Velrix',
+    'managed_externally_body' => 'This panel account is linked to your Velrix account, so your username, email and password are set there and kept in sync automatically. Change them from Account settings on the Velrix dashboard and the update will appear here within a few moments.',
+    'managed_externally_hint' => 'Managed by Velrix. Change this from your Velrix account settings.',
+    'managed_externally_error' => 'This account is managed by Velrix. Change your :field from Account settings on the Velrix dashboard instead.',
     'admin' => 'Admin',
     'exit_admin' => 'Exit Admin',
     'server_list' => 'Server List',

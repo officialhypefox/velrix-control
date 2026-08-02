@@ -111,8 +111,23 @@ class EditProfile extends BaseEditProfile
                 ->label(trans('profile.tabs.account'))
                 ->icon(TablerIcon::UserCog)
                 ->schema([
+                    // Velrix owns these accounts: it creates them, and it pushes
+                    // username/email changes down from the dashboard. Upstream
+                    // already locks the fields for is_managed_externally users, but
+                    // it locks them silently — a greyed-out box with no reason reads
+                    // as a broken panel, and the user's only next move is a support
+                    // ticket. Say who owns the field and where to change it.
+                    TextEntry::make('managed_externally_notice')
+                        ->label(trans('profile.managed_externally_title'))
+                        ->visible(fn (User $user) => $user->is_managed_externally)
+                        ->state(trans('profile.managed_externally_body'))
+                        ->icon(TablerIcon::InfoCircle)
+                        ->color('info'),
                     TextInput::make('username')
                         ->disabled(fn (User $user) => $user->is_managed_externally)
+                        ->helperText(fn (User $user) => $user->is_managed_externally
+                            ? trans('profile.managed_externally_hint')
+                            : null)
                         ->prefixIcon(TablerIcon::User)
                         ->label(trans('profile.username'))
                         ->required()
@@ -120,6 +135,9 @@ class EditProfile extends BaseEditProfile
                         ->unique(),
                     TextInput::make('email')
                         ->disabled(fn (User $user) => $user->is_managed_externally)
+                        ->helperText(fn (User $user) => $user->is_managed_externally
+                            ? trans('profile.managed_externally_hint')
+                            : null)
                         ->prefixIcon(TablerIcon::Mail)
                         ->label(trans('profile.email'))
                         ->email()
