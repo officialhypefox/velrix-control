@@ -1,3 +1,88 @@
+# Velrix Control: a modified version of Pelican Panel
+
+**This is a modified fork of [Pelican Panel](https://github.com/pelican-dev/panel).** It is maintained by
+Hypefox AB and runs as the control panel behind [Velrix](https://www.velrix.net), which hosts Discord
+bots and applications. It is not affiliated with or endorsed by the Pelican project.
+
+Pelican Panel is licensed under the GNU Affero General Public License v3. Section 5(a) of that licence
+requires a modified version to state that it was changed and when, and section 13 requires that anyone
+using it over a network can obtain the source. This notice covers the first, and the second is covered by
+this repository being public: what you see here is the source of the panel we actually run.
+
+* Upstream project: https://github.com/pelican-dev/panel
+* This fork: https://github.com/officialhypefox/velrix-control
+* Licence: AGPL-3.0, unchanged. See [`license`](license).
+
+First modified 3 September 2025. Most recent modification 2 August 2026.
+
+Upstream is merged in regularly, so this fork tracks Pelican rather than diverging from it. Everything
+listed below is a change we made on top.
+
+## What we changed
+
+### Single sign-on from the Velrix dashboard (25 July 2026)
+
+Velrix creates panel accounts for its users, and those users never set a panel password, so there is no
+way for them to sign in the normal way. A new endpoint accepts a short-lived token signed by the Velrix
+backend (HMAC-SHA256 over a base64url JSON payload, using a secret shared between the two), verifies it
+in constant time, opens a normal panel session and lands the user on their server.
+
+* Added `app/Http/Controllers/Auth/VelrixSsoController.php`
+* Added the `/auth/sso` route in `routes/auth.php`
+* Added `config/velrix.php`, which holds the shared secret. Single sign-on refuses every request while
+  that secret is empty, so an unconfigured install cannot be signed into this way.
+
+### Higher API rate limits (25 July 2026)
+
+Pelican keys its client and application API limiters by the requesting user, which assumes one human
+clicking around. Velrix brokers every one of its users' server actions through a single key, so those
+buckets are the whole platform's shared throughput and the stock defaults throttled almost immediately.
+The affected limits in `config/http.php` were raised well above stock. Velrix enforces its own per-user
+limits before a request ever reaches the panel. Every value is still overridable by its environment
+variable, so an install that does not front the panel this way can put them back.
+
+### An explanation on locked account fields (2 August 2026)
+
+Upstream already locks username, email and password for externally managed users, which is correct, but
+it locks them silently. A greyed-out box with no reason reads as a broken panel and the user's only next
+move is a support ticket. The fields now say who owns them and where to change them, and the equivalent
+API responses return that sentence instead of a bare "This action is unauthorized".
+
+* `app/Filament/Pages/Auth/EditProfile.php`
+* `app/Http/Requests/Api/Client/Account/UpdateEmailRequest.php`,
+  `UpdatePasswordRequest.php` and `UpdateUsernameRequest.php`
+* `lang/en/profile.php`
+
+No permission changed here. The fields were locked before and are locked now.
+
+### Branding (20 September 2025, and 13 February 2026)
+
+Pelican's logo and favicon in `public/` were replaced with ours, and the footer credits Hypefox AB
+alongside Pelican rather than replacing the Pelican credit.
+
+### Build and deploy workflows (from 9 November 2025)
+
+Upstream's release, Docker publish, Crowdin and CLA workflows were removed, and one deploy workflow was
+added for our own infrastructure. Nothing here affects the panel at runtime, and none of it would be
+useful to anyone not deploying to our servers.
+
+## Seeing the changes for yourself
+
+This list is written by hand, so the repository is the authority, not this file. To see every line we
+changed against upstream:
+
+```bash
+git clone https://github.com/officialhypefox/velrix-control.git
+cd velrix-control
+git remote add upstream https://github.com/pelican-dev/panel.git
+git fetch upstream
+git diff upstream/main...HEAD
+```
+
+---
+
+Everything below this line is Pelican's own readme, kept as it is upstream.
+
 <img width="20%" src="https://raw.githubusercontent.com/pelican-dev/panel/main/public/pelican.svg" alt="logo">
 
 # Pelican Panel
