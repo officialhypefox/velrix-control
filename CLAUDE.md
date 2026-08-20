@@ -1,8 +1,12 @@
 # Velrix Control — working notes
 
-A **fork of the Pelican panel** (`pelican/panel`, PHP/Laravel). It is the game-server
-control plane that Velrix drives through the panel's APIs; it is not a Velrix-authored
-codebase.
+A **fork of the Pelican panel** (`pelican/panel`, PHP/Laravel). It is the server control
+plane Velrix drives through the panel's APIs; it is not a Velrix-authored codebase.
+
+Pelican is a game-server panel upstream, but Velrix does not offer game servers yet. What it
+provisions today is Discord bots and apps: the egg catalogue is Python, Node.js, Bun, Go, Java
+and Rust runtimes plus Red-DiscordBot and Modmail. Worth keeping straight when writing copy or
+naming things, since the upstream vocabulary implies a product we do not ship.
 
 ## Treat it as a fork first
 

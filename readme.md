@@ -1,6 +1,6 @@
 # Velrix Control: a modified version of Pelican Panel
 
-**This is a modified fork of [Pelican Panel](https://github.com/pelican-dev/panel).** It is maintained by
+**This is a modified fork of [Pelican Panel](https://github.com/pelican/panel).** It is maintained by
 Hypefox AB and runs as the control panel behind [Velrix](https://www.velrix.net), which hosts Discord
 bots and applications. It is not affiliated with or endorsed by the Pelican project.
 
@@ -9,7 +9,7 @@ requires a modified version to state that it was changed and when, and section 1
 using it over a network can obtain the source. This notice covers the first, and the second is covered by
 this repository being public: what you see here is the source of the panel we actually run.
 
-* Upstream project: https://github.com/pelican-dev/panel
+* Upstream project: https://github.com/pelican/panel
 * This fork: https://github.com/officialhypefox/velrix-control
 * Licence: AGPL-3.0, unchanged. See [`license`](license).
 
@@ -74,7 +74,7 @@ changed against upstream:
 ```bash
 git clone https://github.com/officialhypefox/velrix-control.git
 cd velrix-control
-git remote add upstream https://github.com/pelican-dev/panel.git
+git remote add upstream https://github.com/pelican/panel.git
 git fetch upstream
 git diff upstream/main...HEAD
 ```
